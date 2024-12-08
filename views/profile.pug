@@ -1,0 +1,44 @@
+extends layout
+
+block content
+  h1 User Profile
+  form(action="/users/profile" method="POST" enctype="multipart/form-data")
+    .form-group
+    label(for="profileImage") Profile Image
+    if user.profileImage
+      img.mb-2(src=user.profileImage alt="Profile Image" style="width: 150px; height: 150px; object-fit: cover;")
+    input#profileImage.form-control(type="file" name="profileImage" accept="image/jpeg,image/png")
+
+    .form-group
+      label(for="name") Name
+      input#name.form-control(type="text" name="name" value=user.name readonly)
+    
+    .form-group
+      label(for="nickname") Nickname
+      input#nickname.form-control(type="text" name="nickname" value=user.nickname)
+    
+    .form-group
+      label(for="gender") Gender
+      select#gender.form-control(name="gender")
+        option(value="" selected=!user.gender) Select Gender
+        option(value="male" selected=user.gender==='male') Male
+        option(value="female" selected=user.gender==='female') Female
+        option(value="other" selected=user.gender==='other') Other
+    
+    .form-group
+      label(for="country") Country
+      input#country.form-control(type="text" name="country" value=user.country)
+    
+    .form-group
+      label(for="language") Language
+      input#language.form-control(type="text" name="language" value=user.language)
+    
+    .form-group
+      label(for="timeZone") Time Zone
+      input#timeZone.form-control(type="text" name="timeZone" value=user.timeZone)
+    
+    .form-group
+      label(for="email") Email
+      input#email.form-control(type="email" name="email" value=user.email readonly)
+    
+    button.btn.btn-primary(type="submit") Update Profile
