@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1 Edit Task
+  form(method="POST", action="/tasks/edit/" + task._id, id="taskForm")
+    label Title:
+    input(type="text", name="title", value=task.title)
+    br
+    label Description:
+    input(type="text", name="description", value=task.description)
+    br
+    label Due Date:
+    input(type="date", name="dueDate", value=(task.dueDate ? task.dueDate.toISOString().split('T')[0] : ''), id="dueDate")
+    br
+    label Estimated Time (minutes):
+    input(type="number", name="estimatedTime", value=task.estimatedTime, step="1", min="0")
+    br
+    input(value="Update Task", type="submit")
+
+

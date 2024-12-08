@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1 Your Tasks
+  if tasks.length === 0
+    p No tasks available.
+  else
+    if user
+      a(href="/tasks/add") Add Task
+    each task in tasks
+      div.card
+        div.card-header
+          h3= task.title
+        div.card-body
+          p Description: #{task.description}
+          if task.dueDate
+            p Due Date: #{new Date(task.dueDate).toLocaleDateString()}
+          else
+            p Due Date: Not set
+          p Status: #{task.status}
+          p Estimated Time: #{task.estimatedTime} minute(s)
+          if user 
+            a(href="/tasks/edit/" + task._id) Edit
+            br
+            a(href="/tasks/delete/" + task._id) Delete

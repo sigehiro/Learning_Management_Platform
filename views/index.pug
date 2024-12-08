@@ -3,3 +3,30 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  // 今日中のタスクのリストをカード形式で表示
+  //TODO 時間があればローカル日付に合うように設定をし直しておく
+  if tasks.length === 0
+    p No tasks available.
+  else
+    each task in tasks
+      if new Date(task.dueDate).toDateString() === new Date().toDateString()
+        div.card
+          div.card-header
+            h3= task.title
+          div.card-body
+            p
+              strong Estimated Time:
+              | #{task.estimatedTime} minute(s)
+            p
+              strong Due Date:
+              | #{new Date(task.dueDate).toLocaleDateString()} 
+            p
+              strong Status:
+              | #{task.status}
+            if user 
+              a(href="/tasks/edit/" + task._id) Edit
+              br
+              a(href="/tasks/delete/" + task._id) Delete
+  if user
+    a(href="/tasks/add") Add Task

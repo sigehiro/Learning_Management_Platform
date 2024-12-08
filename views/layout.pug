@@ -4,4 +4,24 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    block content
+    nav
+      if !user
+        a(href="/users/register") Register
+        br
+        a(href="/users/login") Login
+      else 
+        a(href="/") Main 
+        br
+        a(href="/tasks") View Tasks
+        br
+        a(href="/tasks/add") Add Task
+        br
+        a(href="/users/logout") Logout
+        br
+      br
+
+
+    main
+      block content
+      
+    footer
