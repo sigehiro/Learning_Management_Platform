@@ -1,0 +1,95 @@
+extends layout
+
+block content
+  h1 Create a New Goal
+  if errors
+    each error in errors
+      p(style="color:red") #{error.msg}
+  
+  form(method="POST", action="/goals/add", id="goalForm")
+    label Title:
+    input(type="text", name="title")
+    br
+    label Description:
+    input(type="text", name="description")
+    br
+    // Calendar display
+    button(type="button", id="prevMonth") Previous
+    h1#monthyear December #{year} <!-- Month name and year will be dynamically updated -->
+    button(type="button", id="nextMonth") Next
+    table
+      thead
+        tr
+          th M
+          th Tu
+          th W
+          th Th
+          th F
+          th Sa
+          th Su
+      tbody
+        each week in calendar
+          tr
+            each day in week
+              td
+                if day
+                  button(type="button", class="calendar-button", value=year + "-" + (month+1) + "-" + day, onclick="selectDate(this)") #{day}
+    br
+    // Hidden input field to store selected dates
+    input(type="hidden", name="dueDate", id="dueDate")    
+    input(value="Create Goal", type="submit")
+
+  script.
+    let selectedDates = [];
+    let currentMonth = #{month}; // Set current month (from the backend)
+    let currentYear = #{year};   // Set current year (from the backend)
+    
+    // Update month name based on the current month index
+    function monthName(month) {
+      const months = ["January", "February", "March", "April", "May", "June", 
+                      "July", "August", "September", "October", "November", "December"];
+      return months[month];
+    }
+
+    // Function to update the calendar and month/year display
+    function updateCalendar() {
+      // Update the month name and year in the header
+      document.getElementById("monthyear").textContent = `${monthName(currentMonth)} ${currentYear}`;
+      
+      // Re-render the calendar grid here needs to be added
+    }
+
+    // Function to handle the previous month click
+    document.getElementById("prevMonth").onclick = function() {
+      currentMonth = (currentMonth - 1 + 12) % 12;
+      if (currentMonth === 11) currentYear--; // Decrement year if month is December (0 index)
+      updateCalendar();
+    };
+
+    // Function to handle the next month click
+    document.getElementById("nextMonth").onclick = function() {
+      currentMonth = (currentMonth + 1) % 12;
+      if (currentMonth === 0) currentYear++; // Increment year if month is January (0 index)
+      updateCalendar();
+    };
+
+    // Select a date on the calendar
+    function selectDate(button) {
+      const date = button.value;  // The date in format "YYYY-MM-DD"
+      
+      // Toggle selection of the date
+      const index = selectedDates.indexOf(date);
+      if (index === -1) {
+        selectedDates.push(date);
+        button.style.backgroundColor = 'lightgreen'; // Visual feedback for selected date
+      } else {
+        selectedDates.splice(index, 1);
+        button.style.backgroundColor = ''; // Remove selection color
+      }
+      
+      // Update the hidden input field
+      document.getElementById('dueDate').value = selectedDates;
+    }
+
+    // Initialize the calendar on page load
+    updateCalendar();
