@@ -4,11 +4,87 @@ let Task = require('../models/goal')
 const { body, validationResult } = require('express-validator')
 
 // タスク一覧
-router.get('/', (req, res) => {
-    Task.find({ assignedTo: req.user.id }).then((tasks) => {
-        res.render('task_list', { tasks })
-    })
-})
+router.get('/listTasks/:title', (req, res) => {
+    const title = req.params.title;  // Extract title from the URL
+    Task.find({ title: title, assignedTo: req.user.id })  // Find tasks associated with this goal and user
+        .then((goals) => {
+            if (!goals) {
+                return res.status(404).render('error', { message: 'Goal not found' });
+            }
+            if (!(goals[0])) {
+                return res.status(404).render('error', { message: 'Goal not found' });
+            }
+            const tasks = JSON.parse(goals[0].tasks);
+            console.log(tasks);
+            res.render('goal_detail', { title, tasks });  // Render goal page with associated tasks
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(500).render('error', { message: 'Failed to fetch goal details or tasks' });
+        });
+});
+
+router.get('/addTask/:title', (req, res) => {
+    const title = req.params.title;
+    console.log("override now");
+    console.log({ title });
+    res.render('add_task', { title });
+});
+
+router.post(
+    '/addTask/:title',
+    body('title').notEmpty().withMessage('Title is required'),
+    body('description').notEmpty().withMessage('Description is required'),
+    body('dueDate').notEmpty().withMessage('Due Date is required'),
+    body('estimatedTime').notEmpty().withMessage('Estimated Time is required'),
+    (req, res) => {
+        const title = req.params.title;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return Task.find({ title: title, assignedTo: req.user.id })  // Find tasks associated with this goal and user
+                .then((goal) => {
+                    res.render('add_task', { goal, errors: errors.array() });
+                })
+                .catch((error) => {
+                    res.status(500).render('error', { message: 'Failed to retrieve goal for error handling' });
+                });
+        }
+
+        // Create the new task
+        const newTask = {
+            title: req.body.title,
+            description: req.body.description,
+            dueDate: req.body.dueDate,
+            estimatedTime: req.body.estimatedTime
+        };
+
+        // Find the goal and update the tasks field
+        Task.findOne({ title: title, assignedTo: req.user.id })
+            .then(taskDoc => {
+                // Parse the current tasks string (if it exists) into an array
+                const tasks = taskDoc.tasks ? JSON.parse(taskDoc.tasks) : [];  // If tasks is null or empty, initialize as an empty array
+
+                // Add the new task to the tasks array
+                tasks.push(newTask);
+
+                // Convert the updated tasks array back to a string
+                const updatedTasksString = JSON.stringify(tasks);
+
+                // Now, update the tasks field with the new string
+                return Task.findOneAndUpdate({ title: title, assignedTo: req.user.id }, {
+                    $set: { tasks: updatedTasksString }
+                });
+            })
+            .then(() => {
+                res.redirect(`/goals/listTasks/${title}`);
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(500).render('error', { message: 'Failed to add task to goal' });
+            });
+    }
+);
 
 // タスク追加ページ
 router.get('/add', (req, res) => {
@@ -70,14 +146,21 @@ router.post(
             description: req.body.description,
             dueDate: selectedDates, // Store the array of dates
             assignedTo: req.user.id,
+            tasks: "[]",
         });
         task.save()
             .then(() => {
-                res.redirect('/');
+                res.redirect(`/goals/listTasks/${req.body.title}`);
             })
             .catch((error) => {
                 console.log(error);
-                res.render('add_goal', { errors: [{ msg: 'Failed to save task' }] });
+                res.render('add_goal', {
+                    year,
+                    month,
+                    previousMonth,
+                    nextMonth,
+                    calendar,
+                    errors: [{ msg: 'Failed to save task' }] });
             });
     }
 )

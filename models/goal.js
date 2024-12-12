@@ -17,6 +17,10 @@ let goalSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    tasks: {
+        type: String,
+        required: true,
+    },
 });
 
 module.exports = mongoose.model('Goal', goalSchema);
