@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Goal: #{title}
+  if tasks.length > 0
+    ul
+      each task in tasks
+        li
+          h2 Title: #{task.title}
+          h2 Description: #{task.description}
+          h2 Due Date: #{task.dueDate}
+          h2 Estimated Time (minutes): #{task.estimatedTime}
+  else
+    p No tasks for this goal yet.
+  a(href=`/goals/addTask/${title}`) Add task

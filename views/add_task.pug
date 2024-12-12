@@ -5,7 +5,7 @@ block content
   if errors
     each error in errors
       p(style="color:red") #{error.msg}
-  form(method="POST", action="/tasks/add", id="taskForm")
+  form(method="POST", action="", id="taskForm")
     label Title:
     input(type="text", name="title")
     br
