@@ -2,31 +2,141 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  h3 Welcome to #{title}!
+  p Here you can see a visualization of all the tasks you have currently! The progress bar at the top shows how many of today's tasks you've completed, helping you track your daily goals. Below, you'll find an interactive chart that displays your task durations over time - switch between weekly and monthly views to get different perspectives on your workload. The vertical axis shows the estimated minutes for your tasks, while the horizontal axis shows the dates, making it easy to spot patterns in your task scheduling and identify busier periods.
+  br
 
-  // 今日中のタスクのリストをカード形式で表示
-  //TODO 時間があればローカル日付に合うように設定をし直しておく
-  if tasks.length === 0
-    p No tasks available.
-  else
-    each task in tasks
-      if new Date(task.dueDate).toDateString() === new Date().toDateString()
-        div.card
-          div.card-header
-            h3= task.title
-          div.card-body
-            p
-              strong Estimated Time:
-              | #{task.estimatedTime} minute(s)
-            p
-              strong Due Date:
-              | #{new Date(task.dueDate).toLocaleDateString()} 
-            p
-              strong Status:
-              | #{task.status}
-            if user 
-              a(href="/tasks/edit/" + task._id) Edit
-              br
-              a(href="/tasks/delete/" + task._id) Delete
-  if user
-    a(href="/tasks/add") Add Task
+  //- Progress Bar Container
+  .dashboard-container
+    .progress-section
+      h3 Today's Tasks Progress
+      .progress-bar-container
+        .progress-bar
+          .progress-fill(style=`width: ${progressPercentage}%`)
+        .progress-text #{progressPercentage}% Complete
+
+    //- Chart Section
+    .chart-section
+      .chart-controls
+        button#weekBtn.btn-primary Weekly
+        button#monthBtn.btn-primary Monthly
+      .chart-container
+        canvas#taskChart
+
+  //- Add Chart.js
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  
+  //- Initialize Chart
+  script.
+    // Convert tasks data for the chart
+    const tasks = !{JSON.stringify(tasks)};
+    
+    // Chart initialization
+    const ctx = document.getElementById('taskChart').getContext('2d');
+    let chart;
+
+    // Format date for display
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString();
+    }
+
+    // Process data for chart
+    function processData(timeRange) {
+      const today = new Date();
+      const startDate = new Date();
+      
+      // Set correct date ranges
+      if (timeRange === 'week') {
+          // Set to 7 days ago
+          startDate.setDate(today.getDate() - 7);
+      } else {
+          // Set to 30 days ago
+          startDate.setDate(today.getDate() - 30);
+      }
+
+      // Filter and group tasks by date
+      const filteredTasks = tasks.filter(task => {
+          const taskDate = new Date(task.dueDate);
+          return taskDate >= startDate && taskDate <= today;
+      });
+
+      // Create an array of dates between start and end
+      const dates = [];
+      const currentDate = new Date(startDate);
+      while (currentDate <= today) {
+          dates.push(new Date(currentDate));
+          currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Initialize data for all dates (including ones with no tasks)
+      const groupedData = {};
+      dates.forEach(date => {
+          groupedData[formatDate(date)] = 0;
+      });
+
+      // Add task data
+      filteredTasks.forEach(task => {
+          const date = formatDate(new Date(task.dueDate));
+          groupedData[date] += task.estimatedTime;
+      });
+
+      return {
+          labels: Object.keys(groupedData),
+          data: Object.values(groupedData)
+      };
+    }
+
+    // Create/Update chart
+    function updateChart(timeRange) {
+      const chartData = processData(timeRange);
+      
+      if (chart) {
+        chart.destroy();
+      }
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Task Duration (minutes)',
+                data: chartData.data,
+                borderColor: '#018da5',
+                backgroundColor: 'rgba(1, 141, 165, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,  
+            aspectRatio: 2, 
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Minutes'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+    }
+
+    // Event listeners for buttons
+    document.getElementById('weekBtn').addEventListener('click', () => {
+      updateChart('week');
+    });
+    
+    document.getElementById('monthBtn').addEventListener('click', () => {
+      updateChart('month');
+    });
+
+    // Initialize with weekly view
+    updateChart('week');

@@ -4,12 +4,9 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    nav
-      if !user
-        a(href="/users/register") Register
-        br
-        a(href="/users/login") Login
-      else 
+    //- I changed this because I think displaying the nav when you aren't logged in is redundent 
+    if user
+      nav
         a(href="/") Main 
         br
         a(href="/tasks") View Tasks
@@ -28,15 +25,15 @@ html
         form.register-form(method="POST", action="/users/register")
           .register-form-group
             label.register-label(for="name") Username
-            input.register-input(type="text", id="name", name="name", placeholder="username", required)
+            input.register-input(type="text", id="name", name="name", placeholder="e.g., john_doe123", required)
 
           .register-form-group
             label.register-label(for="email") Email Address
-            input.register-input(type="email", id="email", name="email", placeholder="example@gmail.com", required)
+            input.register-input(type="email", id="email", name="email", placeholder="example@email.com", required)
 
           .register-form-group
             label.register-label(for="password") Password
-            input.register-input(type="password", id="password", name="password", placeholder="password", required)
+            input.register-input(type="password", id="password", name="password", placeholder="Create a strong password", required)
 
           button.register-button(type="submit") Register
 
@@ -44,7 +41,7 @@ html
           a.register-login-link(href="/users/login") Log in
 
       section.register-welcome-section
-        h1.register-welcome-title Welcome to the Learning Support Platform
+        h1.register-welcome-title Welcome to the Task Master!
         .register-welcome-message
           p.register-welcome-text We offer a full range of features to support efficient learning and keep you motivated. Create an account now and start learning!
           .register-icon-container
