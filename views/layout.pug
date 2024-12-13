@@ -3,27 +3,60 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    nav
-      if !user
-        a(href="/users/register") Register
-        br
-        a(href="/users/login") Login
-      else 
-        a(href="/") Main 
-        br
-        a(href="/tasks") View Tasks
-        br
-        a(href="/tasks/add") Add Task
-        br
-        a(href="/users/logout") Logout
-        br
-        a(href="/users/profile") Settings
-        br
-      br
+    script(src="https://unpkg.com/lucide@latest")
+  body(class=user ? 'authenticated' : '')
+    if user
+      nav.sidenav
+        a.nav-item(href="/")
+          i(data-lucide="home").nav-icon
+          span Home
+        
+        a.nav-item(href="/tasks")
+          i(data-lucide="list-todo").nav-icon
+          span View Tasks
+        
+        a.nav-item(href="/tasks/add")
+          i(data-lucide="plus-circle").nav-icon
+          span Add Task
 
+        a.nav-item(href="/tasks/task-detail")
+          i(data-lucide="notebook-tabs").nav-icon
+          span Details
+
+        a.nav-item(href="/users/profile")
+          i(data-lucide="user").nav-icon
+          span Profile
+      
+        a.nav-item(href="/users/logout")
+          i(data-lucide="log-out").nav-icon
+          span Logout
 
     main
       block content
       
     footer
+      .footer-content
+        .footer-section
+          h3 About TaskMaster
+          p Your ultimate task management solution for improved productivity and organization.
+        
+        .footer-section
+          h3 Quick Links
+          ul
+            li
+              a(href="/users/login") Login
+            li
+              a(href="/users/register") Register
+        
+        .footer-section
+          h3 Contact Info
+          p
+            | Email: support@taskmaster.com
+            br
+            | Phone: (123) 456-7890
+      
+      .footer-bottom
+        p &copy; 2024 TaskMaster. All rights reserved.
+
+    script
+      | lucide.createIcons();
