@@ -1,0 +1,58 @@
+extends layout
+
+block content
+  // Hero Section
+  .hero-section
+    img.hero-image(src="/images/hero_img.jpg", alt="Task Management Hero Image")
+    .hero-content
+      h1.hero-title Welcome to TaskMaster
+      p.hero-text Organize, Track, and Achieve More
+
+  // Features Grid Section
+  .features-container
+    .features-grid
+      // Feature 1
+      .feature-card
+        .feature-image-container
+          img.feature-image(src="/images/feature1.png", alt="Organization")
+        h3.feature-title Task Organization
+        p.feature-text Create and manage tasks with our intuitive interface
+      
+      // Feature 2
+      .feature-card
+        .feature-image-container
+          img.feature-image(src="/images/feature2.png", alt="Tracking")
+        h3.feature-title Progress Tracking
+        p.feature-text Monitor your achievements in real-time
+      
+      // Feature 3
+      .feature-card
+        .feature-image-container
+          img.feature-image(src="/images/feature3.png", alt="Collaboration")
+        h3.feature-title Achieve Goals
+        p.feature-text Effectively and easily achieve your goals
+
+  // Call to Action Section
+  .cta-section
+    h2.cta-title Ready to Start Tracking!
+    .cta-buttons
+      a(href="/users/login").btn-primary.edit-button Login
+      a(href="/users/register").btn-primary.edit-button Sign Up
+
+  // Progress Management Section
+  .info-section
+    .info-container
+      .info-image-container
+        img.info-image(src="/images/progress_management.png", alt="Progress Management")
+      .info-content
+        h2.info-title Easy to understand progress management
+        p.info-text Our intuitive interface makes tracking progress simple and effective
+
+  // Time Saving Section
+  .info-section.reverse
+    .info-container
+      .info-content
+        h2.info-title Saves you time
+        p.info-text Streamline your workflow and focus on what matters most
+      .info-image-container
+        img.info-image(src="/images/save_time.png", alt="Time Saving")
