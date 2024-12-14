@@ -1,21 +1,25 @@
 extends layout
 
 block content
-  h1 Add Task
-  if errors
-    each error in errors
-      p(style="color:red") #{error.msg}
-  form(method="POST", action="", id="taskForm")
-    label Title:
-    input(type="text", name="title")
-    br
-    label Description:
-    input(type="text", name="description")
-    br
-    label Due Date:
-    input(type="date", name="dueDate", id="dueDate")
-    br
-    label Estimated Time (minutes):
-    input(type="number", name="estimatedTime", step="1", min="0")
-    br
-    input(value="Add Task", type="submit")
+  // Include the stylesheet
+  link(rel="stylesheet", href="/stylesheets/add-task.css")
+
+  .add-task-container
+    h1 Add Task
+    if errors
+      each error in errors
+        p(style="color:red") #{error.msg}
+    form(method="POST", action="", id="taskForm")
+      label Title:
+      input(type="text", name="title")
+      br
+      label Description:
+      input(type="text", name="description")
+      br
+      label Due Date:
+      input(type="date", name="dueDate", id="dueDate")
+      br
+      label Estimated Time (minutes):
+      input(type="number", name="estimatedTime", step="1", min="0")
+      br
+      input(value="Add Task", type="submit")

@@ -1,0 +1,81 @@
+/* General Styling */
+body {
+    background-color: #f9f9f9;
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Header Section */
+.header-container {
+    display: flex;
+    justify-content: space-between; /* Space out title and text */
+    align-items: center;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.header-container h1 {
+    flex: 1;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1a73e8;
+    margin: 0;
+}
+
+/* Text Block Styling */
+.text-block {
+    flex: 2;
+    max-width: 800px;
+    margin-left: 20px;
+}
+
+.text-block h3 {
+    color: #018da5;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.text-block p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column; /* Stack title and text on smaller screens */
+        text-align: center;
+    }
+
+    .header-container h1 {
+        margin-bottom: 20px;
+    }
+
+    .text-block {
+        margin-left: 0;
+    }
+}
+
+
+
+
+

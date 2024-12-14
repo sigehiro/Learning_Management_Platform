@@ -1,25 +1,63 @@
 extends layout
 
 block content
-  h1 Your Tasks
-  if tasks.length === 0
-    p No tasks available.
-  else
-    if user
-      a(href="/tasks/add") Add Task
-    each task in tasks
-      div.card
-        div.card-header
-          h3= task.title
-        div.card-body
-          p Description: #{task.description}
-          if task.dueDate
-            p Due Date: #{new Date(task.dueDate).toLocaleDateString()}
-          else
-            p Due Date: Not set
-          p Status: #{task.status}
-          p Estimated Time: #{task.estimatedTime} minute(s)
-          if user 
-            a(href="/tasks/edit/" + task._id) Edit
-            br
-            a(href="/tasks/delete/" + task._id) Delete
+  link(rel="stylesheet", href="/stylesheets/task-list.css")
+
+  .task-page-container
+    h1 Your Tasks
+
+    if tasks.length === 0
+      p No tasks available.
+    else
+      .actions-section
+        a(href="/tasks/add").add-task-button Add Task
+
+      each task in tasks
+        div.card
+          div.card-header
+            h3= task.title
+          div.card-body
+            p
+              strong Description:
+              | #{task.description}
+            if task.dueDate
+              p
+                strong Due Date:
+                | #{new Date(task.dueDate).toLocaleDateString()}
+            else
+              p
+                strong Due Date:
+                | Not set
+            p
+              strong Status:
+              | #{task.status}
+            p
+              strong Estimated Time:
+              | #{task.estimatedTime} minute(s)
+            div.checkbox-container
+              label
+                input(type="checkbox" name="status" value="completed" checked=task.status === 'completed' onChange=`updateStatus('${task._id}')`)
+                | Mark as Completed
+          .actions-section
+            a(href="/tasks/edit/" + task._id).btn.btn-primary Edit
+            a(href="/tasks/delete/" + task._id).btn.btn-primary Delete
+
+  script.
+    function updateStatus(taskId) {
+      const checkbox = event.target;
+      const status = checkbox.checked ? 'completed' : 'pending';
+      
+      fetch(`/tasks/update-status/${taskId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
