@@ -1,66 +1,56 @@
 extends layout
 
 block content
-  h1= title
-  h3 Welcome to #{title}!
-  p Here, you can view your current tasks for the day and stay on track by marking your tasks as completed!
-  br
+  link(rel="stylesheet", href="/stylesheets/task-detail.css")
 
-  .header-container
-    h3 Ongoing Tasks
-    .add-task-button
-      a(href="/tasks/add").btn-primary.edit-button Add Task
+  .task-detail-container
+    .left-section
+      h1 Task Management Overview
+      p Manage your tasks efficiently with our simple and modern interface. You can track your daily tasks and mark them as completed!
 
-  if tasks.length === 0
-    p No tasks available.
-  else
-    each task in tasks
-      if new Date(task.dueDate).toDateString() === new Date().toDateString() && task.status === 'pending'
-        div.card
-          div.card-header
-            h3= task.title
-            input(type='checkbox' onChange=`updateStatus('${task._id}')`)
-            |    Mark as completed
-          div.card-body
-            p
-              strong Estimated Time:
-              | #{task.estimatedTime} minute(s)
-            p
-              strong Due Date:
-              | #{new Date(task.dueDate).toLocaleDateString()} 
-            p
-              strong Status:
-              | #{task.status}
-            if user 
-              a(href="/tasks/edit/" + task._id) Edit
-              br
-              a(href="/tasks/delete/" + task._id) Delete
+    .right-section
+      h3 Ongoing Tasks
+      p These are your tasks for today that are still pending completion.
+      .add-task-button
+        a(href="/tasks/add") Add New Task
 
-  br
-  h3 Completed Tasks
-  each task in tasks
-    if new Date(task.dueDate).toDateString() === new Date().toDateString() && task.status === 'completed'
-      div.card
-        div.card-header
-          h3= task.title
-          input(type='checkbox' checked onChange=`updateStatus('${task._id}')`)
-          |    Uncheck
-        div.card-body
-          p
-            strong Estimated Time:
-            | #{task.estimatedTime} minute(s)
-          p
-            strong Due Date:
-            | #{new Date(task.dueDate).toLocaleDateString()} 
-          p
-            strong Status:
-            | #{task.status}
-          if user 
-            a(href="/tasks/edit/" + task._id) Edit
-            br
-            a(href="/tasks/delete/" + task._id) Delete
+      .task-card-container
+        if tasks.length === 0
+          p No tasks available for today.
+        else
+          each task in tasks
+            if new Date(task.dueDate).toDateString() === new Date().toDateString() && task.status === 'pending'
+              div.task-card
+                h4= task.title
+                p
+                  strong Estimated Time:
+                  | #{task.estimatedTime} minute(s)
+                p
+                  strong Due Date:
+                  | #{new Date(task.dueDate).toLocaleDateString()}
+                div.mark-complete
+                  input(type='checkbox' onChange=`updateStatus('${task._id}')`)
+                  label Mark as Completed
+                p.status.pending Pending Task
 
-  //- Update Status
+      .completed-tasks
+        h3 Completed Tasks
+        .task-card-container
+          each task in tasks
+            if task.status === 'completed'
+              div.task-card
+                h4= task.title
+                p
+                  strong Description:
+                  | #{task.description}
+                p
+                  strong Estimated Time:
+                  | #{task.estimatedTime} minute(s)
+                p
+                  strong Due Date:
+                  | #{new Date(task.dueDate).toLocaleDateString()}
+                p.status Completed Task
+
   script.
     function updateStatus(taskId) {
       const checkbox = event.target;

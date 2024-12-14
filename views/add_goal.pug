@@ -5,14 +5,15 @@ block content
   if errors
     each error in errors
       p(style="color:red") #{error.msg}
-  
+
   form(method="POST", action="/goals/add", id="goalForm")
     label Title:
-    input(type="text", name="title")
+    input(type="text", name="title", required)
     br
     label Description:
-    input(type="text", name="description")
+    input(type="text", name="description", required)
     br
+
     // Calendar display
     button(type="button", id="prevMonth") Previous
     h1#monthyear December #{year} <!-- Month name and year will be dynamically updated -->
@@ -36,7 +37,7 @@ block content
                   button(type="button", class="calendar-button", value=year + "-" + (month+1) + "-" + day, onclick="selectDate(this)") #{day}
     br
     // Hidden input field to store selected dates
-    input(type="hidden", name="dueDate", id="dueDate")    
+    input(type="hidden", name="dueDate", id="dueDate")
     input(value="Create Goal", type="submit")
 
   script.
@@ -53,43 +54,63 @@ block content
 
     // Function to update the calendar and month/year display
     function updateCalendar() {
-      // Update the month name and year in the header
       document.getElementById("monthyear").textContent = `${monthName(currentMonth)} ${currentYear}`;
-      
-      // Re-render the calendar grid here needs to be added
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const tbody = document.querySelector("table tbody");
+      tbody.innerHTML = "";
+
+      let day = 1;
+      for (let i = 0; i < 6; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < 7; j++) {
+          const cell = document.createElement("td");
+          if (i === 0 && j < firstDay || day > daysInMonth) {
+            row.appendChild(cell);
+          } else {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "calendar-button";
+            button.textContent = day;
+            button.value = `${currentYear}-${currentMonth + 1}-${day}`;
+            button.onclick = function () { selectDate(this); };
+            if (selectedDates.includes(button.value)) button.style.backgroundColor = 'lightgreen';
+            cell.appendChild(button);
+            day++;
+          }
+          row.appendChild(cell);
+        }
+        tbody.appendChild(row);
+        if (day > daysInMonth) break;
+      }
     }
 
-    // Function to handle the previous month click
-    document.getElementById("prevMonth").onclick = function() {
+    // Handle previous and next month navigation
+    document.getElementById("prevMonth").onclick = function () {
       currentMonth = (currentMonth - 1 + 12) % 12;
-      if (currentMonth === 11) currentYear--; // Decrement year if month is December (0 index)
+      if (currentMonth === 11) currentYear--;
       updateCalendar();
     };
 
-    // Function to handle the next month click
-    document.getElementById("nextMonth").onclick = function() {
+    document.getElementById("nextMonth").onclick = function () {
       currentMonth = (currentMonth + 1) % 12;
-      if (currentMonth === 0) currentYear++; // Increment year if month is January (0 index)
+      if (currentMonth === 0) currentYear++;
       updateCalendar();
     };
 
-    // Select a date on the calendar
+    // Toggle date selection
     function selectDate(button) {
-      const date = button.value;  // The date in format "YYYY-MM-DD"
-      
-      // Toggle selection of the date
+      const date = button.value;
       const index = selectedDates.indexOf(date);
       if (index === -1) {
         selectedDates.push(date);
-        button.style.backgroundColor = 'lightgreen'; // Visual feedback for selected date
+        button.style.backgroundColor = 'lightgreen';
       } else {
         selectedDates.splice(index, 1);
-        button.style.backgroundColor = ''; // Remove selection color
+        button.style.backgroundColor = '';
       }
-      
-      // Update the hidden input field
       document.getElementById('dueDate').value = selectedDates;
     }
 
-    // Initialize the calendar on page load
+    // Initialize calendar
     updateCalendar();
